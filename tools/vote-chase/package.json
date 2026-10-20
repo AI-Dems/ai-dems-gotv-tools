@@ -1,0 +1,9 @@
+{
+  "name": "vote-chase",
+  "private": true,
+  "description": "Vote Chase: a single web page that ranks precincts by Democratic-leaning and persuadable voters who have not voted yet, from VAN count exports. Tests cover the page (in headless Chromium) and the optional runner.",
+  "scripts": {
+    "test": "npm --prefix runner test",
+    "postinstall": "echo 'Nothing to install for the page itself. For the optional runner: cd runner && npm install && npm run setup'"
+  }
+}

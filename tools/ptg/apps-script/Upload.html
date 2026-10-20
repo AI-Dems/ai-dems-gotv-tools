@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font: 13px/1.5 Arial, sans-serif; margin: 16px; color: #202124; }
+    p { margin: 0 0 12px; }
+    input[type=file] { display: block; margin: 12px 0; }
+    button { background: #1a73e8; color: #fff; border: 0; border-radius: 4px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+    button:disabled { background: #9aa0a6; }
+    #msg { margin-top: 12px; min-height: 2em; }
+    .ok { color: #188038; } .err { color: #d93025; }
+    small { color: #5f6368; }
+  </style>
+</head>
+<body>
+  <p>Choose a file exported from VAN: <b>CSV</b>, <b>tab-delimited TXT</b>, or VAN's <b>"Excel" download (.xls)</b>, which is tab-delimited text and imports best. The Event Participant Report feeds shift metrics; a list export with survey questions feeds survey metrics. The sheet works out which it is from the column headers. Extra columns are ignored.</p>
+  <input type="file" id="file" accept=".csv,.txt,.tsv,.xls,text/csv,text/plain,text/tab-separated-values,application/vnd.ms-excel">
+  <button id="go" onclick="upload()">Import</button>
+  <button id="run" onclick="runNow()" style="display:none;margin-left:8px">Run now</button>
+  <div id="msg"></div>
+  <p style="margin-top:14px"><b>No Export button on your report?</b> Select the table on the report page, copy, and paste it here. Repeat for each page; repeated header rows and duplicates are skipped.</p>
+  <textarea id="paste" rows="4" style="width:100%;box-sizing:border-box;font:12px monospace" placeholder="Paste rows copied from a VAN report table"></textarea>
+  <button id="pastego" onclick="uploadPaste()" style="margin-top:6px">Import pasted rows</button>
+  <small>Real Excel workbooks (.xlsx): select the "VAN survey export" or "VAN shifts export" tab, then use File → Import → Upload → "Replace current sheet".</small>
+  <script>
+    function upload() {
+      var f = document.getElementById('file').files[0];
+      var msg = document.getElementById('msg');
+      if (!f) { msg.className = 'err'; msg.textContent = 'Pick a file first.'; return; }
+      document.getElementById('go').disabled = true;
+      msg.className = ''; msg.textContent = 'Reading ' + f.name + '…';
+      var reader = new FileReader();
+      reader.onload = function () {
+        msg.textContent = 'Importing…';
+        google.script.run
+          .withSuccessHandler(function (s) { msg.className = 'ok'; msg.textContent = s + ' Import another file, or click Run now.'; document.getElementById('go').disabled = false; document.getElementById('run').style.display = 'inline-block'; })
+          .withFailureHandler(function (e) { msg.className = 'err'; msg.textContent = e.message; document.getElementById('go').disabled = false; })
+          .importExportText(reader.result, f.name);
+      };
+      reader.readAsText(f);
+    }
+    function uploadPaste() {
+      var text = document.getElementById('paste').value, msg = document.getElementById('msg');
+      if (!text.trim()) { msg.className = 'err'; msg.textContent = 'Paste some rows first.'; return; }
+      document.getElementById('pastego').disabled = true;
+      msg.className = ''; msg.textContent = 'Importing pasted rows…';
+      google.script.run
+        .withSuccessHandler(function (s) { msg.className = 'ok'; msg.textContent = s; document.getElementById('paste').value = ''; document.getElementById('pastego').disabled = false; document.getElementById('run').style.display = 'inline-block'; })
+        .withFailureHandler(function (e) { msg.className = 'err'; msg.textContent = e.message; document.getElementById('pastego').disabled = false; })
+        .importExportText(text, 'pasted rows');
+    }
+    function runNow() {
+      var msg = document.getElementById('msg'), b = document.getElementById('run');
+      b.disabled = true; msg.className = ''; msg.textContent = 'Running…';
+      google.script.run
+        .withSuccessHandler(function (s) { msg.className = 'ok'; msg.textContent = 'Done. ' + s + ' See the PTG tab.'; b.disabled = false; })
+        .withFailureHandler(function (e) { msg.className = 'err'; msg.textContent = 'Run failed: ' + e.message + ' The log tab has details.'; b.disabled = false; })
+        .runFromDialog();
+    }
+  </script>
+</body>
+</html>

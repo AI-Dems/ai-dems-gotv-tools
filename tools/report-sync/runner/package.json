@@ -1,0 +1,20 @@
+{
+  "name": "report-sync-runner",
+  "private": true,
+  "type": "module",
+  "description": "Exports saved Votebuilder reports on a schedule and sends them to the Report Sync Google Sheet.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "start": "node --env-file-if-exists=.env sync.mjs",
+    "check": "node --env-file-if-exists=.env sync.mjs --once --headed",
+    "service": "node scripts/service.mjs",
+    "stop": "node scripts/stop.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "csv-parse": "^7.0.2",
+    "playwright": "1.63.0"
+  }
+}

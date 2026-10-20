@@ -1,0 +1,23 @@
+{
+  "name": "vote-chase-runner",
+  "private": true,
+  "type": "module",
+  "description": "Pulls the Vote Chase count tables out of VoteBuilder on a schedule and writes data.js for the page. A fork of AI-Dems/votebuilder-report-sync.",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "start": "node --env-file-if-exists=.env export.mjs",
+    "check": "node --env-file-if-exists=.env export.mjs --headed --only returned --then-make-data",
+    "export:all": "node --env-file-if-exists=.env export.mjs --then-make-data",
+    "make-data": "node src/makedata.mjs",
+    "service": "node scripts/service.mjs",
+    "stop": "node scripts/stop.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "adm-zip": "^0.6.1",
+    "playwright": "1.63.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "report-sync-apps-script",
+  "private": true,
+  "description": "Votebuilder Report Sync — Apps Script bound to the template Google Sheet",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "push": "clasp push"
+  }
+}

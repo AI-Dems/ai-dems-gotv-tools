@@ -1,0 +1,8 @@
+{
+  "crosstab": "2026: DNC Dem Party Support",
+  "column": "Precinct",
+  "returned": "All early voters",
+  "returned_regulars": "All active early voters",
+  "registered": "All registered voters",
+  "registered_regulars": "Active registered voters"
+}

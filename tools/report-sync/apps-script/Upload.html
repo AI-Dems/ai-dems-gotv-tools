@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font: 14px/1.5 Arial, sans-serif; margin: 16px; color: #202124; }
+    .drop { border: 2px dashed #9aa0a6; border-radius: 8px; padding: 28px 16px; text-align: center; color: #5f6368; cursor: pointer; }
+    .drop.over { border-color: #1a73e8; background: #e8f0fe; }
+    .drop strong { color: #202124; }
+    label { display: block; margin-top: 16px; font-weight: bold; }
+    select, input[type=text] { width: 100%; padding: 6px; margin-top: 4px; font-size: 14px; box-sizing: border-box; }
+    button { display: block; margin-top: 16px; padding: 8px 20px; font-size: 14px; background: #1a73e8; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+    button:disabled { background: #9aa0a6; cursor: default; }
+    #msg { margin-top: 12px; min-height: 1.5em; }
+    .ok { color: #188038; } .err { color: #c5221f; }
+    small { color: #5f6368; }
+  </style>
+</head>
+<body>
+  <div class="drop" id="drop">
+    <input type="file" id="file" accept=".zip,.xls,.csv" style="display:none">
+    <strong>Drop the export here</strong> or click to choose<br>
+    <small>The .zip you downloaded from Votebuilder → My Export Files (or the .xls / .csv inside it)</small>
+  </div>
+  <div id="picked"></div>
+
+  <label for="tab">Put it in tab</label>
+  <select id="tab"></select>
+  <input type="text" id="newtab" placeholder="New tab name" style="display:none">
+  <small>The tab is replaced top to bottom. Rows and columns are never deleted, so formulas elsewhere keep working.</small>
+
+  <button id="go" disabled>Import</button>
+  <div id="msg"></div>
+
+  <script>
+    var fileB64 = null, fileName = '';
+    var drop = document.getElementById('drop'), input = document.getElementById('file');
+    var tabSel = document.getElementById('tab'), newTab = document.getElementById('newtab');
+    var go = document.getElementById('go'), msg = document.getElementById('msg');
+
+    function say(text, cls) { msg.textContent = text; msg.className = cls || ''; }
+
+    function fillTabs(tabs, suggested) {
+      tabSel.innerHTML = '';
+      tabs.forEach(function (t) {
+        var o = document.createElement('option'); o.value = t; o.textContent = t; tabSel.appendChild(o);
+      });
+      var other = document.createElement('option'); other.value = '__new__'; other.textContent = 'New tab…'; tabSel.appendChild(other);
+      if (suggested && tabs.indexOf(suggested) >= 0) tabSel.value = suggested;
+      tabSel.onchange();
+    }
+    tabSel.onchange = function () { newTab.style.display = tabSel.value === '__new__' ? 'block' : 'none'; };
+
+    function chosenTab() { return tabSel.value === '__new__' ? newTab.value.trim() : tabSel.value; }
+
+    function pick(file) {
+      if (!file) return;
+      fileName = file.name;
+      document.getElementById('picked').textContent = file.name + ' (' + Math.max(1, Math.round(file.size / 1024)) + ' KB)';
+      say('Reading…');
+      var r = new FileReader();
+      r.onload = function () {
+        fileB64 = r.result.split(',')[1];
+        google.script.run
+          .withSuccessHandler(function (c) { fillTabs(c.tabs, c.suggested); go.disabled = false; say(c.suggested ? 'Looks like "' + c.suggested + '" (same columns as last time).' : ''); })
+          .withFailureHandler(function (e) { say(e.message, 'err'); })
+          .uploadChoices(fileB64, fileName);
+      };
+      r.readAsDataURL(file);
+    }
+
+    drop.onclick = function () { input.click(); };
+    input.onchange = function () { pick(input.files[0]); };
+    drop.ondragover = function (e) { e.preventDefault(); drop.classList.add('over'); };
+    drop.ondragleave = function () { drop.classList.remove('over'); };
+    drop.ondrop = function (e) { e.preventDefault(); drop.classList.remove('over'); pick(e.dataTransfer.files[0]); };
+
+    go.onclick = function () {
+      var tab = chosenTab();
+      if (!tab) { say('Type a name for the new tab.', 'err'); return; }
+      go.disabled = true; say('Importing…');
+      google.script.run
+        .withSuccessHandler(function (r) {
+          say('Done: ' + r.rows + ' rows × ' + r.columns + ' columns in "' + r.tab + '" from ' + r.file + '.', 'ok');
+          fileB64 = null;
+        })
+        .withFailureHandler(function (e) { say(e.message, 'err'); go.disabled = false; })
+        .importUpload(fileB64, fileName, tab);
+    };
+
+    google.script.run.withSuccessHandler(function (c) { fillTabs(c.tabs, ''); }).uploadChoices(null, '');
+  </script>
+</body>
+</html>

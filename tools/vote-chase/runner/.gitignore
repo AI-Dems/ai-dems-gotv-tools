@@ -1,0 +1,8 @@
+node_modules/
+profile/
+profiles/
+logs/
+failures/
+.env
+searches.json
+exports/

@@ -1,0 +1,9 @@
+{
+  "name": "observer-vetting-apps-script",
+  "private": true,
+  "description": "Poll Observer Vetting — Apps Script bound to the Google Sheet",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "push": "clasp push"
+  }
+}

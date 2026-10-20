@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Vote Chase</title>
+<meta name="description" content="Which precincts have the most Democratic-leaning and persuadable voters who have not voted yet? Drop VAN count exports on this page and get a ranked list.">
+<style>
+:root{
+  --bg:#eceff6; --card:#ffffff; --card2:#f6f7fb; --ink:#0e1830; --ink2:#38435c; --ink3:#556079;
+  --line:#e1e5ef; --line2:#7f89a0; --tail:#e6e9f2; --track:#e4e8f1; --hover:#f7f8fc;
+  --accent:#3a35c4; --accent-bg:#ebebfd; --accent-line:#c9c8f6; --accent-ring:rgba(58,53,196,.18);
+  --primary:#3a35c4; --primary-hover:#2c279f; --on-accent:#ffffff; --focus:#3a35c4;
+  --band1:#0c1a3a; --band2:#24206e; --band-ink:#ffffff; --band-ink2:#c3cbe4; --band-line:rgba(255,255,255,.18); --band-edge:rgba(0,0,0,.18);
+  --warn:#7a4a00; --warn-bg:#fdecc8; --good:#14653a; --good-bg:#ddf3e5; --good-tint:#f0faf4; --good-line:#5fae82;
+  --top-bg:#f3f3fe; --hero-tint:#f1f1fe; --drop-bg:#fafaff; --drop-hover:#f3f3fe; --drop-line:#858fb3;
+  --shadow:0 1px 2px rgba(14,24,48,.06),0 8px 24px -8px rgba(14,24,48,.14);
+  --radius:14px; --radius-sm:9px;
+  --font:"Inter","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-display:"Inter Display","Inter","SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI Variable Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0a0f1d; --card:#131a2c; --card2:#0f1626; --ink:#eef2fb; --ink2:#bcc5da; --ink3:#9aa5bf;
+  --line:#242d46; --line2:#5f6b88; --tail:#2a3350; --track:#242d46; --hover:#172036;
+  --accent:#a9adff; --accent-bg:#1f2350; --accent-line:#3a3f86; --accent-ring:rgba(169,173,255,.25);
+  --primary:#8f95ff; --primary-hover:#a7acff; --on-accent:#0a0f1d; --focus:#a9adff;
+  --band1:#0d1530; --band2:#1d1b52; --band-ink2:#b7c0dc; --band-edge:rgba(255,255,255,.07);
+  --warn:#f1c465; --warn-bg:#3a2a0b; --good:#86dcaa; --good-bg:#123522; --good-tint:#10241b; --good-line:#2f7a52;
+  --top-bg:#191f3d; --hero-tint:#1a1f40; --drop-bg:#151c33; --drop-hover:#1a2140; --drop-line:#5c6890;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -10px rgba(0,0,0,.6); color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0a0f1d; --card:#131a2c; --card2:#0f1626; --ink:#eef2fb; --ink2:#bcc5da; --ink3:#9aa5bf;
+  --line:#242d46; --line2:#5f6b88; --tail:#2a3350; --track:#242d46; --hover:#172036;
+  --accent:#a9adff; --accent-bg:#1f2350; --accent-line:#3a3f86; --accent-ring:rgba(169,173,255,.25);
+  --primary:#8f95ff; --primary-hover:#a7acff; --on-accent:#0a0f1d; --focus:#a9adff;
+  --band1:#0d1530; --band2:#1d1b52; --band-ink2:#b7c0dc; --band-edge:rgba(255,255,255,.07);
+  --warn:#f1c465; --warn-bg:#3a2a0b; --good:#86dcaa; --good-bg:#123522; --good-tint:#10241b; --good-line:#2f7a52;
+  --top-bg:#191f3d; --hero-tint:#1a1f40; --drop-bg:#151c33; --drop-hover:#1a2140; --drop-line:#5c6890;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -10px rgba(0,0,0,.6); color-scheme:dark; }
+*{box-sizing:border-box}
+body{zoom:0.9}
+@supports not (zoom:1){ html{font-size:13.5px} }
+@media print{ body{zoom:1} }
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:var(--accent);text-underline-offset:3px}
+.hidden{display:none !important}
+
+/* header band */
+header.top{background:linear-gradient(110deg,var(--band1) 0%,var(--band1) 40%,var(--band2) 100%);color:var(--band-ink);border-bottom:1px solid var(--band-edge)}
+header.top .wrap{max-width:1120px;margin:0 auto;padding:18px 16px 14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+header.top h1{position:relative;font-family:var(--font-display);font-size:24px;font-weight:750;margin:0;letter-spacing:-.02em;padding-left:36px;line-height:1.2}
+header.top h1::before{content:"";position:absolute;left:0;top:50%;width:26px;height:26px;margin-top:-13px;border-radius:8px;background:linear-gradient(140deg,#8e93ff,#4c45e6);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 2px 6px rgba(0,0,0,.25)}
+header.top h1::after{content:"";position:absolute;left:8px;top:50%;width:10px;height:5px;margin-top:-5px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg)}
+header.top .asof{font-size:15px;font-weight:550;color:var(--band-ink);padding-left:16px;border-left:1px solid var(--band-line)}
+header.top .local{font-size:12.5px;color:var(--band-ink2);flex-basis:100%}
+header.top .local a{color:var(--band-ink)}
+header.top #resetBtn{margin-left:auto;color:var(--band-ink2);font-weight:550}
+header.top #resetBtn:hover{color:var(--band-ink)}
+header.top :focus-visible{outline-color:#fff}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:650;line-height:1.2;padding:5px 12px 5px 10px;border-radius:999px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.chip.ok{background:#c8f1d8;color:#0b4a2a;box-shadow:none} .chip.warn{background:#ffe2a0;color:#5a3500;box-shadow:none}
+.chip:hover{text-decoration:underline}
+
+/* layout and cards */
+main{max-width:1120px;margin:0 auto;padding:18px 16px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:0 0 16px;box-shadow:var(--shadow)}
+.card h2{font-family:var(--font-display);font-size:20px;font-weight:720;letter-spacing:-.015em;margin:0 0 12px;line-height:1.25}
+.banner{background:var(--accent-bg);color:var(--ink);border:1px solid var(--accent-line);border-left:4px solid var(--accent);border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;margin:0 0 16px}
+#todayCard{background:linear-gradient(135deg,var(--hero-tint) 0%,var(--card) 60%);padding:24px 26px 22px}
+.headline{font-family:var(--font-display);font-size:27px;font-weight:650;line-height:1.28;letter-spacing:-.018em;margin:0 0 20px;max-width:52ch;text-wrap:pretty}
+.headline b{color:var(--accent);font-weight:800;font-variant-numeric:tabular-nums}
+.bigs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);padding-top:16px}
+.big{padding:0 18px;border-left:1px solid var(--line);min-width:0}
+.big:first-child{padding-left:0;border-left:0}
+.big .lbl{font-size:13px;font-weight:600;color:var(--ink2);line-height:1.3}
+.big .val{font-family:var(--font-display);font-size:38px;font-weight:760;letter-spacing:-.03em;line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.big:first-child .val{color:var(--accent)}
+.big .sub{font-size:13px;color:var(--ink3);margin-top:6px;line-height:1.35}
+.note{font-size:13.5px;color:var(--ink2)}
+/* secondary cards recede */
+#dataCard,#checksCard,#historyCard,#how{background:var(--card2);box-shadow:none;padding:2px 20px}
+body:has(#todayCard.hidden) #dataCard{background:var(--card);box-shadow:var(--shadow);padding:6px 20px 14px}
+body:has(#todayCard.hidden) #dataSummary{font-family:var(--font-display);font-size:19px;font-weight:720;letter-spacing:-.01em;padding:14px 0 12px}
+details>summary{cursor:pointer;font-weight:650;color:var(--ink);padding:13px 0;list-style:none;display:flex;align-items:center;gap:12px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";flex:none;width:7px;height:7px;margin:0 3px 0 2px;border-right:2px solid var(--ink3);border-bottom:2px solid var(--ink3);transform:rotate(-45deg);transition:transform .15s}
+details[open]>summary::before{transform:rotate(45deg) translate(-2px,-2px)}
+details>summary:hover{color:var(--accent)}
+details details{border-top:1px solid var(--line)}
+details details>summary{font-weight:600;color:var(--ink2);padding:11px 0}
+#dataDetails{padding-bottom:4px}
+
+/* controls */
+button,select,input[type=text],input[type=date],input[type=number]{font:inherit;font-size:14px;line-height:1.2;color:var(--ink);background-color:var(--card);border:1px solid var(--line2);border-radius:var(--radius-sm);padding:8px 12px;min-height:38px}
+button{cursor:pointer;font-weight:600;transition:background-color .12s,border-color .12s,box-shadow .12s}
+button:hover{background-color:var(--hover);border-color:var(--ink3)}
+button.primary{background-color:var(--primary);color:var(--on-accent);border-color:var(--primary);padding:8px 16px;box-shadow:0 1px 2px rgba(14,24,48,.2),inset 0 1px 0 rgba(255,255,255,.14)}
+button.primary:hover{background-color:var(--primary-hover);border-color:var(--primary-hover)}
+button.quiet{background-color:var(--card)}
+button.link{background:none;border:none;color:var(--accent);padding:4px 6px;min-height:0;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;box-shadow:none}
+button.link:hover{background:none;text-decoration-thickness:2px}
+.toolbar button.link{min-height:38px;padding:8px 10px;text-decoration:none;border-radius:var(--radius-sm)}
+.toolbar button.link:hover{background:var(--accent-bg)}
+button:disabled{opacity:.5;cursor:default}
+select{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:34px;background-image:linear-gradient(45deg,transparent 50%,var(--ink2) 50%),linear-gradient(135deg,var(--ink2) 50%,transparent 50%);background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;max-width:100%}
+select:hover,input[type=text]:hover,input[type=date]:hover{border-color:var(--ink3)}
+input[type=date]{color-scheme:inherit}
+input[type=checkbox]{accent-color:var(--primary);width:18px;height:18px;margin:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+label.ctl{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink2)}
+
+/* tables */
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);font-weight:700;position:sticky;top:0;background:var(--card2);z-index:2;border-bottom:1px solid var(--line2)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--hover)}
+th.sortable{cursor:pointer;user-select:none} th.sortable:hover{color:var(--ink)} th.sorted{color:var(--accent)} th.sorted::after{content:" \25BE"}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td.bar{min-width:180px;width:34%}
+td .sub{display:block;font-size:12px;font-weight:400;color:var(--ink3);white-space:nowrap;margin-top:2px}
+#chaseTable td{height:52px}
+#chaseTable td:nth-child(2){font-weight:600}
+#chaseTable td:nth-child(3){font-size:16px}
+#chaseTable td:nth-child(3) b{font-weight:760}
+.rank span{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--ink3)}
+#chaseTable:has(th.sorted[data-sort="chase"]) tbody tr:first-child td{background:var(--top-bg)}
+#chaseTable:has(th.sorted[data-sort="chase"]) tbody tr:first-child .rank span{background:var(--primary);border-color:var(--primary);color:var(--on-accent)}
+#chaseTable:has(th.sorted[data-sort="chase"]) tbody tr:first-child td:nth-child(2){font-weight:750}
+#chaseTable tbody tr:has(~ tr.half) td:first-child,#chaseTable tbody tr.half td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+tr.half td{border-bottom:2px solid var(--accent)}
+tr.half td.bar{position:relative}
+tr.half td.bar::after{content:"half above";position:absolute;right:10px;bottom:-10px;z-index:1;font-size:10.5px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;line-height:1;padding:4px 8px;border-radius:999px;background:var(--accent);color:var(--on-accent)}
+.stack{display:flex;height:18px;border-radius:5px;overflow:hidden;gap:2px;background:transparent}
+.stack span{display:block;height:100%}
+.stack span:last-child{border-radius:0 4px 4px 0}
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;color:var(--ink2);margin:0 0 14px}
+.legend span{display:inline-flex;align-items:center;padding:3px 10px 3px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-weight:600}
+.legend span.muted{background:none;border:0;padding:3px 4px;font-weight:400;color:var(--ink3)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px}
+.tablewrap{overflow:auto;max-height:72vh;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:0 0 14px}
+.toolbar .spacer{flex:1}
+.toolbar .actions{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.halfnote{font-size:12.5px;color:var(--ink3);margin:12px 0 0}
+
+/* drop zones */
+.dropgrid{display:grid;grid-template-columns:auto 1fr 1fr;gap:10px 12px;align-items:stretch;margin-top:4px}
+.dropgrid .axis{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;line-height:1.35;color:var(--ink2);font-weight:700;align-self:center;max-width:150px}
+.dropgrid .axis.top{text-align:center;max-width:none;padding-bottom:0}
+.drop{position:relative;background:var(--drop-bg);border:1.5px dashed var(--drop-line);border-radius:12px;padding:14px 14px 14px 60px;min-height:96px;display:flex;flex-direction:column;justify-content:center;gap:3px;cursor:pointer;transition:background-color .15s,border-color .15s,box-shadow .15s}
+.drop::before{content:"+";position:absolute;left:14px;top:16px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--accent-bg);color:var(--accent);font-size:21px;font-weight:600;line-height:1}
+.drop:hover{border-color:var(--accent);background:var(--drop-hover)}
+.drop.over{background:var(--accent-bg);border-color:var(--accent);border-style:solid;box-shadow:0 0 0 4px var(--accent-ring)}
+.drop.loaded{border-style:solid;border-color:var(--good-line);background:var(--good-tint)}
+.drop.loaded::before{content:"\2713";background:var(--good);color:var(--card);font-size:16px;font-weight:800}
+.drop .t{font-weight:700;color:var(--ink);display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;line-height:1.3}
+.drop .t .req{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 7px;border-radius:999px;background:var(--card2);color:var(--ink3);border:1px solid var(--line);line-height:1}
+.drop .t .req.is-req{background:var(--accent-bg);color:var(--accent);border-color:var(--accent-line)}
+.drop .s{font-size:13px;color:var(--ink2);line-height:1.4} .drop .f{font-size:12.5px;color:var(--ink3);font-weight:500} .drop.loaded .f{color:var(--good);font-weight:650}
+.drop .err{font-size:13px;color:var(--warn);font-weight:650} .drop .err:empty{display:none}
+.drop input{display:none}
+.buckets td select{min-height:32px;padding:4px 30px 4px 8px;background-position:calc(100% - 16px) 52%,calc(100% - 11px) 52%} .buckets td input[type=text]{width:130px;min-height:32px;padding:4px 8px} .buckets td input[type=color]{width:34px;height:28px;border:none;background:none;padding:0;cursor:pointer}
+.buckets td{padding:8px 10px}
+
+/* checks, steps, misc */
+.checks{list-style:none;padding:0;margin:0 0 12px}
+.checks li{position:relative;margin:0;padding:7px 0 7px 30px;border-top:1px solid var(--line);color:var(--ink2)}
+.checks li::before{content:"\2022";position:absolute;left:0;top:7px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:var(--card);color:var(--ink3);border:1px solid var(--line)}
+.checks li.ok::before{content:"\2713";background:var(--good-bg);color:var(--good);border-color:transparent}
+.checks li.bad{color:var(--ink)} .checks li.bad::before{content:"!";background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.small{font-size:13px} .muted{color:var(--ink3)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:2px 0 16px}
+.steps div{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--ink2)}
+.steps b{display:block;color:var(--accent);margin-bottom:4px;font-size:15px}
+code,pre{font-family:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,monospace;font-size:12.5px}
+code{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;overflow:auto} pre code{border:0;padding:0;background:none}
+#how ol,#how ul{padding-left:22px} #how li{margin:4px 0}
+.printonly{display:none}
+
+@media (max-width:640px){
+  header.top .wrap{padding:12px 14px 12px;gap:6px 12px}
+  header.top h1{font-size:21px;flex:1 1 calc(100% - 140px);padding-left:32px}
+  header.top h1::before{width:23px;height:23px;margin-top:-11.5px;border-radius:7px}
+  header.top h1::after{left:7px}
+  header.top #resetBtn{order:1}
+  header.top .asof{order:2;font-size:14px;padding-left:0;border-left:0}
+  header.top .chip{order:3}
+  header.top .local{order:4}
+  main{padding:12px 12px 36px}
+  .card{padding:16px;border-radius:12px;margin-bottom:12px}
+  #todayCard{padding:18px 16px 16px}
+  #dataCard,#checksCard,#historyCard,#how{padding:0 16px}
+  .headline{font-size:20px;margin-bottom:16px}
+  .card h2{font-size:18px}
+  .bigs{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px;padding-top:14px}
+  .big{padding:0 12px} .big:nth-child(odd){padding-left:0;border-left:0}
+  .big .val{font-size:28px}
+  th,td{padding:8px 6px} #chaseTable td{height:auto} th{font-size:10.5px;letter-spacing:.04em;white-space:normal;line-height:1.25}
+  #chaseCard{padding:16px 12px}
+  td.bar .stack{height:16px}
+  #chaseTable td:first-child,#chaseTable th:first-child{padding-left:8px}
+  .rank span{min-width:22px;height:22px;padding:0 4px;font-size:11.5px}
+  #chaseTable td:nth-child(3){font-size:15px}
+  tr.half td.bar::after{right:4px;font-size:9.5px;padding:3px 6px}
+  .toolbar label.ctl:has(input[type=checkbox]){flex-basis:100%}
+  .toolbar label.ctl:not(:has(input[type=checkbox])){flex:1 1 calc(50% - 14px);min-width:0;flex-direction:column;align-items:stretch;gap:4px;font-size:12px}
+  .toolbar label.ctl select,.toolbar label.ctl input[type=date]{width:100%;min-width:0}
+  .toolbar .note{flex-basis:100%}
+  table.buckets{display:block;overflow-x:auto;max-width:100%}
+  .c-opt,.c-cum,.c-voted{display:none} td.bar{min-width:90px;width:34%} td:nth-child(2){white-space:normal;line-height:1.25;font-size:14px}
+  .dropgrid{grid-template-columns:1fr} .dropgrid .axis{display:none}
+  .hide-phone{display:none}
+}
+@media (min-width:1500px){
+  html,body{font-size:16px}
+  main,header.top .wrap{max-width:1320px}
+  .headline{font-size:32px} .big .val{font-size:46px} .big .lbl,.big .sub{font-size:14px}
+  #chaseTable{font-size:16px} #chaseTable td:nth-child(3){font-size:18px}
+}
+@media print{
+  :root{ --bg:#fff; --card:#fff; --card2:#fff; --ink:#111; --ink2:#444; --ink3:#666; --line:#ccc; --line2:#aaa; --tail:#ccc; --track:#f2f2f2; --hover:#fff; --accent:#2b278f; --primary:#2b278f; --on-accent:#fff; --top-bg:#fff; --hero-tint:#fff; --shadow:none; }
+  body{background:#fff;color:#111}
+  header.top{background:none;color:#111;border:0} header.top .wrap{padding:0 0 6px;max-width:none}
+  header.top h1{padding-left:0} header.top h1::before,header.top h1::after{display:none} header.top .asof{color:#111;border:0}
+  #resetBtn{display:none !important}
+  main{max-width:none;padding:0}
+  .toolbar,#dataCard,#checksCard,#historyCard,#how,.local,#checksChip,.legend .muted,#banner{display:none !important}
+  .tablewrap{max-height:none;overflow:visible;border:0} .card{border:0;break-inside:avoid;padding:0;box-shadow:none;background:#fff !important}
+  .stack,.stack span,.legend i,.rank span,tr.half td.bar::after{-webkit-print-color-adjust:exact;print-color-adjust:exact} th{position:static;background:#fff}
+  .printonly{display:block;font-size:13px;color:#444;margin-bottom:6px}
+  @page{size:landscape;margin:12mm}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Vote Chase</h1>
+  <span class="asof" id="asofLine">No data yet</span>
+  <a id="checksChip" class="chip" href="#checksCard">Load data to start</a>
+  <button class="link" id="resetBtn" title="Remove everything this page stored in this browser and start over">Reset page</button>
+  <span class="local">Runs in your browser. Nothing you open here is uploaded anywhere, and the page remembers your data on this computer. <a href="#how">How it works</a>.</span>
+</div></header>
+<main>
+<div id="banner" class="banner hidden"></div>
+
+<section id="todayCard" class="card hidden">
+  <p class="printonly" id="printTitle"></p>
+  <p class="headline" id="headline"></p>
+  <div class="bigs" id="bigs"></div>
+</section>
+
+<section id="chaseCard" class="card hidden">
+  <h2 id="chaseTitle">Precincts to chase</h2>
+  <div class="legend" id="legend"></div>
+  <div class="toolbar">
+    <label class="ctl" id="groupLbl">Filter <select id="groupSel"><option value="">All precincts</option></select></label>
+    <label class="ctl">Sort <select id="sortSel"></select></label>
+    <label class="ctl">Show <select id="topSel"><option value="15">top 15</option><option value="25">top 25</option><option value="50">top 50</option><option value="0">all</option></select></label>
+    <label class="ctl">Counting <select id="basisSel"><option value="regular">regular voters</option><option value="all">all registered</option></select></label>
+    <label class="ctl"><input type="checkbox" id="breakdownChk"> breakdown columns</label>
+    <span class="spacer"></span>
+    <span class="actions">
+    <button class="primary" id="copyBtn" title="Copy the visible rows as text for Slack or email">Copy as text</button>
+    <button class="link" id="csvBtn">CSV</button>
+    <button class="link hide-phone" onclick="window.print()">Print</button>
+    </span>
+  </div>
+  <div class="tablewrap"><table id="chaseTable"><thead></thead><tbody></tbody></table></div>
+  <p class="halfnote" id="chaseFoot"></p>
+</section>
+
+<section class="card" id="dataCard">
+  <details id="dataDetails" open>
+    <summary id="dataSummary">Data</summary>
+    <div class="steps" id="steps">
+      <div><b>1. Pull from VAN</b>Four count reports: Counts, Quick Counts, Crosstab 1 = support score, Column 1 = Precinct, Refresh Results, Export To Excel. <a href="#how">Exact clicks</a>.</div>
+      <div><b>2. Drop the files here</b>The two "all voters" files are required. The "regular voters" files make the list more accurate.</div>
+      <div><b>3. Read the list</b>Precincts ranked by Democratic-leaning and persuadable voters who have not voted yet.</div>
+    </div>
+    <p class="note"><b>Files accepted:</b> the file VAN gives you from Export To Excel (it ends in .xls), or a .csv with the same columns. This page needs count reports (one row per precinct), not voter lists (one row per person). Be careful with any file that contains personal information.</p>
+    <div class="dropgrid" id="drops"></div>
+    <div class="toolbar" style="margin-top:10px">
+      <label class="ctl">Data as of <input type="date" id="asofInput"></label>
+      <label class="ctl">Election Day <input type="date" id="edayInput"></label>
+      <span class="note">The date is read from the newest returned file. Change it if the pull was earlier.</span>
+    </div>
+    <details style="margin-top:8px"><summary>Precinct groups, optional: see one organizer's or one area's precincts at a time</summary>
+      <p class="note"><b>What it is for.</b> By default the list ranks every precinct in the district. If each organizer owns a set of precincts, or the field director thinks in counties or regions, groups let you filter the list to just those precincts, so an organizer sees the ranking inside their own turf and the headline numbers for it. It does not cut turf (that happens inside a precinct, in VAN); it assigns whole precincts to a label.</p>
+      <p class="note"><b>How to set it up.</b> Click "Download a template" below: you get a spreadsheet that already lists every precinct in your data, exactly as VAN names them. Open it in Excel or Google Sheets and fill in the columns next to each precinct, for example <code>county</code>, <code>organizer</code> or <code>region</code>, with whatever labels you use ("Maria", "North", "Turf A"). Add or rename columns as you like. Save it as CSV and drop it here. Every column becomes a choice in the Filter menu above the list, such as "organizer: Maria". Precincts you leave blank show as "(no group)". Do this once; it stays with your data.</p>
+      <div class="dropgrid" style="grid-template-columns:minmax(220px,420px)"><div class="drop" id="dropXwalk" tabindex="0" role="button" aria-label="Precinct groups CSV"><div class="t">Precinct groups CSV</div><div class="s">Drop a file or click</div><div class="f" id="xwalkInfo"></div><div class="err" id="xwalkErr"></div><input type="file" accept=".csv,.txt,.tsv"></div></div>
+      <div class="toolbar" style="margin-top:8px"><button class="quiet small" id="xwalkTemplate">Download a template listing this data's precincts</button><button class="quiet small" id="xwalkClear">Remove groups</button></div>
+    </details>
+    <details style="margin-top:8px" id="bucketDetails"><summary>Score groups (buckets)</summary>
+      <p class="note">The score bands in the VAN file are grouped into buckets, highest score first. Pick the lowest band for each bucket. Tick "chase" on the buckets that should count toward the ranking. The default is five buckets on a 0 to 100 Democratic support score. For a Republican support score, rename the buckets and move the chase ticks; the arithmetic is the same.</p>
+      <div class="toolbar"><label class="ctl">Preset <select id="presetSel"><option value="5">5: Strong D, Lean D, Undecided, Lean R, Strong R</option><option value="4">4: Strong D, Lean D, Lean R, Strong R</option><option value="3">3: Dem, Undecided, Rep</option></select></label>
+        <span class="note" id="bandsInfo"></span></div>
+      <table class="buckets" id="bucketTable"><thead><tr><th>Bucket</th><th>Lowest band</th><th>Covers</th><th>Colour</th><th>Chase</th></tr></thead><tbody></tbody></table>
+    </details>
+    <details style="margin-top:8px"><summary>Saving and sharing</summary>
+      <p class="note">This page keeps your loaded counts, settings and history in this browser on this computer. It does not sync to anyone else. To keep a backup, or to give a colleague the same view, click <b>Download workspace</b>: it saves one small file (a .json) with everything on this page, counts only, no individual voters. Anyone with that file opens this page, clicks <b>Load workspace</b>, and sees the same list. Loading a workspace replaces what is on the page.</p>
+      <div class="toolbar">
+        <button class="quiet" id="saveBtn">Download workspace</button>
+        <button class="quiet" id="loadWsBtn">Load workspace</button><input type="file" id="loadWs" accept=".json" class="hidden">
+        <button class="quiet" id="sampleBtn">Load sample data (made-up precincts)</button>
+        <button class="quiet" id="clearBtn">Reset page (clear everything from this browser)</button>
+      </div>
+    </details>
+  </details>
+</section>
+
+<section class="card hidden" id="checksCard">
+  <details id="checksDetails"><summary id="checksSummary">Checks</summary><ul class="checks small" id="checksList"></ul></details>
+</section>
+
+<section class="card hidden" id="historyCard">
+  <details><summary>History</summary>
+  <p class="note">One line per "data as of" date, kept in this browser so you can see how returns are moving. Loading files with a date that is already here replaces that day's line.</p>
+  <div class="tablewrap" style="max-height:260px"><table id="historyTable"><thead><tr><th>Date</th><th class="num">Returned</th><th class="num">Returned, regulars</th><th class="num">Registered</th><th class="num">Registered, regulars</th><th class="num">Share of regulars voted</th></tr></thead><tbody></tbody></table></div>
+  </details>
+</section>
+
+<section class="card" id="how">
+  <details><summary>How it works, how to pull the files from VAN, and how to automate the VAN pulls</summary>
+  <p class="small">The page reads VAN count reports on your computer and subtracts voters who have returned a ballot from voters who are registered, for each precinct and each score bucket. "Chase voters" are the voters in the ticked buckets who have not yet voted. Nothing is sent anywhere; your data stays in this browser.</p>
+  <ol class="small">
+    <li>Save four searches in VAN, once. Use the <b>same suppression setting on all four</b> (for example Remove All Suppressions). Mixing settings makes "votes left" drift by a couple of percent.
+      <ul>
+        <li><b>Returned</b>: Early Voting, voted early or absentee.</li>
+        <li><b>Returned, regular voters</b>: same, plus Voting History: voted in the last midterm general OR the last presidential general (2022 or 2024).</li>
+        <li><b>Registered</b>: active registered voters, no early-vote filter.</li>
+        <li><b>Registered, regular voters</b>: same, plus the vote-history filter.</li>
+      </ul></li>
+    <li>For each: run the search, then Counts (VAN opens its "Counts and Crosstabs" page). Set Crosstab 1 = your support score (for example "2026: DNC Dem Party Support") and Column 1 = Precinct, set <b>People from</b> to <b>My List</b> (it defaults to Registered Voters, which is everyone in the committee), click Refresh Results, then Export To Excel. VAN does not keep these pickers with the search, so they are set each time.</li>
+    <li>Drop the downloaded files on the boxes above. Files with or without the "%" columns both work. A CSV with the same layout works too.</li>
+    <li>Returned pulls are daily; registered pulls are needed once and again after your state's registration deadline.</li>
+  </ol>
+  <p class="small">What the page expects: a header row whose first cell is <code>Precinct</code>, a row of score band labels (<code>0 to 9.99</code>, <code>10 to 19.99</code>, ..., <code>90+</code>, <code>Unknown</code>), one row per precinct, and a <code>Total People</code> column and row. Precincts with zero people in a pull are left out by VAN; the page treats them as zero. A precinct name that appears twice is added together. Voters with no score show as their own "No score" group.</p>
+  <h3 class="small" style="margin:14px 0 4px">Automating the VAN pulls</h3>
+  <p class="small">Fully automated means nobody touches VAN in the morning: a small program on one campaign laptop (the <b>runner</b>, in the <code>runner</code> folder next to this page) signs in to VoteBuilder, runs the four saved searches, exports the four crosstabs, checks each one against the search's count, and writes <code>data.js</code> next to this page, which then shows today's numbers when anyone opens it. VAN cannot schedule a Counts export itself, so the runner drives the VoteBuilder website with a browser script, in the open: plain clicks, fixed waits, an exact schedule, nothing that pretends to be a person.</p>
+  <p class="small">It needs a VoteBuilder login, a laptop that stays on, Node.js, and about 15 minutes, set up once by whoever on the campaign is comfortable with a terminal: <code>npm install</code>, <code>npm run setup</code> (asks for the login, the score name and the four search names), <code>npm run check</code> (one visible pass), <code>npm run service -- install</code> (every morning). The steps, written out for that person, are in <code>docs/automation.md</code>; what the runner touches and which login to use are in <code>docs/security.md</code>; every error message and its fix is in <code>docs/troubleshooting.md</code>. It runs a script against VoteBuilder, so check with your VAN administrator first. If you are reading this page through a link rather than from a downloaded folder, download the folder first.</p>
+  <p class="small"><b>Half-way option.</b> A person does the four exports by hand in about five minutes and drops them on this page, or runs the converter (<code>npm run make-data</code> in the runner folder) to write <code>data.js</code> for the whole team.</p>
+  <p class="small">If you build your own exporter, write <code>data.js</code> as one line, <code>window.VOTECHASE_DATA = {...};</code>, where <code>{...}</code> is what "Download workspace" produces (the layout is in <code>docs/data-contract.md</code>). A <code>data.json</code> with the same content also works, but only when the page is served from a web server, not from a folder. Counts only: keep voter-level exports (names, VAN IDs, addresses) out of this folder.</p>
+  <p class="small muted">Vote Chase v1.0 · AI Dems · MIT License.</p>
+  </details>
+</section>
+</main>
+
+<script src="data.js" onerror="void 0"></script>
+<script>
+(function(){
+'use strict';
+const STORE_KEY = 'votechase.v1';
+const SLOTS = [
+  {key:'returned', title:'Returned ballots', req:true, row:0, col:0, sub:'Voters who have already voted early or by mail, by precinct and support score.'},
+  {key:'returned_regulars', title:'Returned ballots, regular voters only', req:false, row:0, col:1, sub:'Same, but only voters who voted in the 2022 or 2024 general election.'},
+  {key:'registered', title:'Registered voters', req:true, row:1, col:0, sub:'All active registered voters, by precinct and support score.'},
+  {key:'registered_regulars', title:'Registered voters, regular voters only', req:false, row:1, col:1, sub:'Same, but only voters who voted in the 2022 or 2024 general election.'},
+];
+const PRESETS = {
+  '5': [['Strong D',.8,'#174ea6',true],['Lean D',.6,'#3d9be9',true],['Undecided',.4,'#f5c842',true],['Lean R',.2,'#c2468e',false],['Strong R',0,'#b5121b',false]],
+  '4': [['Strong D',.7,'#174ea6',true],['Lean D',.5,'#3d9be9',true],['Lean R',.3,'#c2468e',false],['Strong R',0,'#b5121b',false]],
+  '3': [['Dem',.6,'#174ea6',true],['Undecided',.4,'#f5c842',true],['Rep',0,'#b5121b',false]],
+};
+const NOSCORE_COLOR = '#5f5f5a';
+// dark-mode partners for the default colours (validated separately); custom colours fall back to a white mix
+const DARK_PAIR = {'#174ea6':'#4a7fe0','#3d9be9':'#78c4f7','#f5c842':'#f8d86b','#c2468e':'#d65db8','#b5121b':'#ef4b4b','#7a7a74':'#8f8c84','#5f5f5a':'#8f8c84'};
+function defaults(){ return { version:1, asof:'', asofFrom:'', electionDay:'', files:{}, crosswalk:null, buckets:null, noScoreChase:false, preset:'5', basis:'regular', group:null, sort:'chase', top:'15', breakdown:false, history:{}, source:'manual' }; }
+let S = defaults();
+
+// ---------- helpers
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>(n==null||isNaN(n))?'':Math.round(n).toLocaleString('en-US');
+const pct=x=>(x==null||isNaN(x))?'':(x*100).toFixed(0)+'%';
+function localISO(d){ const z=new Date(d.getTime()-d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); }
+function fmtDate(s){ if(!s) return ''; const d=new Date(s+'T12:00:00'); return isNaN(d)?s:d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}); }
+function isDark(){ const t=document.documentElement.getAttribute('data-theme'); if(t) return t==='dark'; return matchMedia('(prefers-color-scheme: dark)').matches; }
+function lighten(hex,amt){ const m=/^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m) return hex; const n=parseInt(m[1],16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; const f=v=>Math.round(v+(255-v)*amt).toString(16).padStart(2,'0'); return '#'+f(r)+f(g)+f(b); }
+function barColor(hex){ if(!isDark()) return hex; const k=String(hex||'').toLowerCase(); return DARK_PAIR[k]||lighten(hex,0.3); }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} }
+function load(){ try{ const t=localStorage.getItem(STORE_KEY); if(t){ const o=JSON.parse(t); if(o && o.version===1) applyWorkspace(o, true); } }catch(e){} }
+
+// ---------- bands and buckets
+function bandLow(label){ const s=String(label).trim(); if(/^unknown$/i.test(s)||/^no score$/i.test(s)||/^none$/i.test(s)) return null; const m=s.match(/^(\d+(?:\.\d+)?)/); return m?Number(m[1]):null; }
+function bandLows(){ const set=new Set(); for(const k in S.files){ (S.files[k].bands||[]).forEach(b=>{ const l=bandLow(b); if(l!=null) set.add(l); }); } return [...set].sort((a,b)=>a-b); }
+function bandsOf(){ const f=S.files.registered||S.files.returned||S.files.registered_regulars||S.files.returned_regulars; return f?f.bands:[]; }
+function scaleMax(){ const lows=bandLows(); return lows.length? (lows[lows.length-1]<=1?1:100) : 100; }
+function presetBuckets(key){ const lows=bandLows(); const max=scaleMax(); return PRESETS[key].map(b=>{ let lo=b[1]*max; if(lows.length){ let best=lows[0]; for(const l of lows){ if(Math.abs(l-lo)<Math.abs(best-lo)) best=l; } lo=best; } return {name:b[0], lo, color:b[2], chase:b[3]}; }); }
+function ensureBuckets(){ if(!S.buckets) S.buckets=presetBuckets(S.preset); S.buckets.sort((a,b)=>b.lo-a.lo); if(S.buckets.length) S.buckets[S.buckets.length-1].lo=0; }
+function bucketOf(low){ const bs=S.buckets; for(let i=0;i<bs.length;i++){ if(low>=bs[i].lo) return i; } return bs.length-1; }
+function bucketCovers(i){ const bands=bandsOf(); const hi = i>0?S.buckets[i-1].lo:Infinity; const inb=bands.filter(b=>{ const l=bandLow(b); return l!=null && l>=S.buckets[i].lo && l<hi; }); return inb.length? (inb.length===1?inb[0]:`${inb[0]} to ${inb[inb.length-1]}`) : 'no bands'; }
+
+// ---------- parsing
+function decodeBuffer(buf){
+  const u8=new Uint8Array(buf);
+  if(u8.length>3 && u8[0]===0x50 && u8[1]===0x4B && u8[2]===0x03 && u8[3]===0x04) throw new Error('This is a real Excel workbook (.xlsx). Use the file VAN gives you from Export To Excel, or save the sheet as CSV.');
+  if(u8.length>1 && u8[0]===0xFF && u8[1]===0xFE) return new TextDecoder('utf-16le').decode(buf);
+  if(u8.length>1 && u8[0]===0xFE && u8[1]===0xFF) return new TextDecoder('utf-16be').decode(buf);
+  let zeros=0; for(let i=1;i<Math.min(u8.length,400);i+=2) if(u8[i]===0) zeros++;
+  if(zeros>150) return new TextDecoder('utf-16le').decode(buf);
+  return new TextDecoder('utf-8').decode(buf);
+}
+function stripTags(h){ const d=document.createElement('textarea'); d.innerHTML=h.replace(/<[^>]+>/g,''); return d.value.replace(/\s+/g,' ').trim(); }
+function tableFromHtml(txt){ const rows=[]; const re=/<tr[^>]*>([\s\S]*?)<\/tr>/gi; let m; while((m=re.exec(txt))){ const cells=[]; const cre=/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi; let c; while((c=cre.exec(m[1]))) cells.push(stripTags(c[1])); if(cells.length) rows.push(cells); } return rows; }
+function tableFromDelimited(txt){
+  const lines=txt.replace(/^﻿/,'').replace(/\r/g,'').split('\n').filter(l=>l.trim()!==''); if(!lines.length) return [];
+  const delim=(lines[0].match(/\t/g)||[]).length >= (lines[0].match(/,/g)||[]).length ? '\t' : ',';
+  return lines.map(l=>{ const out=[]; let cur='', q=false; for(let i=0;i<l.length;i++){ const ch=l[i]; if(ch==='"'){ if(q && l[i+1]==='"'){cur+='"';i++;} else q=!q; } else if(ch===delim && !q){ out.push(cur.trim()); cur=''; } else cur+=ch; } out.push(cur.trim()); return out; });
+}
+function toTable(txt){ return /<table|<tr/i.test(txt) ? tableFromHtml(txt) : tableFromDelimited(txt); }
+function num(v){ if(v==null) return 0; const s=String(v).replace(/[,\s]/g,''); if(s==='') return 0; const n=Number(s); return isFinite(n)?n:0; }
+function parseCountReport(txt){
+  const t=toTable(txt); if(t.length<3) throw new Error('Could not find a table in this file.');
+  const lower=r=>r.map(x=>String(x).toLowerCase());
+  const voterish=t.slice(0,3).some(r=>lower(r).some(x=>/^(vanid|van id|voter file vanid|first name|last name|lastname|firstname|address|phone|email|cell)$/.test(x)));
+  if(voterish) throw new Error('This looks like a voter list (names or VAN IDs), not a count report. Export Counts, then Quick Counts, instead.');
+  let hdr=-1; for(let i=0;i<Math.min(t.length,5);i++){ if(/^precinct/i.test(t[i][0]||'')){ hdr=i; break; } }
+  if(hdr<0) throw new Error('The first column header should be "Precinct". In Quick Counts set Column 1 = Precinct.');
+  const h1=t[hdr], h2=t[hdr+1]||[];
+  const looksBand=s=>bandLow(s)!=null||/^unknown$/i.test(s)||/^(less|under|below|over|above|more)\b/i.test(s);
+  let bandRow, dataStart;
+  if(h2.some(looksBand)){ bandRow=h2; dataStart=hdr+2; } else if(h1.slice(1).some(looksBand)){ bandRow=h1.slice(1); dataStart=hdr+1; } else throw new Error('Could not find the score band labels (like "0 to 9.99"). In Quick Counts set Crosstab 1 to your support score.');
+  let lead=0; while(lead<bandRow.length && String(bandRow[lead]).trim()==='') lead++;
+  const labels=bandRow.slice(lead);
+  const cols=[]; labels.forEach((lbl,i)=>{ const s=String(lbl).trim(); if(s==='' ) return; if(/^%$/.test(s)||/^percent/i.test(s)||/^total people$/i.test(s)) return; cols.push({label:s, idx:i+1}); });
+  if(!cols.length) throw new Error('No score band columns found.');
+  const unmatched=cols.filter(c=>bandLow(c.label)==null && !/^unknown$/i.test(c.label)).map(c=>c.label);
+  const expectedWidth = 1 + labels.length + 1;
+  const rows={}, dup=[]; let vanTotalPeople=null, widthBad=0;
+  for(let i=dataStart;i<t.length;i++){ const r=t[i]; if(!r.length) continue; const name=String(r[0]||'').trim(); if(!name) continue;
+    if(/^total people$/i.test(name)){ vanTotalPeople=num(r[r.length-1]); continue; }
+    if(r.length!==expectedWidth && r.length!==expectedWidth-1) widthBad++;
+    const vals=cols.map(c=>num(r[c.idx]));
+    if(rows[name]){ dup.push(name); rows[name]=rows[name].map((v,k)=>v+vals[k]); } else rows[name]=vals; }
+  if(!Object.keys(rows).length) throw new Error('No precinct rows found under the header.');
+  if(widthBad>Object.keys(rows).length/2) throw new Error('The columns do not line up with the score bands. Use exactly one crosstab (the support score) and one column (Precinct).');
+  const seen=new Set(); const dupBands=cols.some(c=>{ if(seen.has(c.label)) return true; seen.add(c.label); return false; });
+  if(dupBands) throw new Error('The same score band appears twice. Use one crosstab only.');
+  return normalizeFile({ bands:cols.map(c=>c.label), rows, vanTotalPeople, duplicates:[...new Set(dup)], unmatched });
+}
+function normalizeFile(f){
+  if(!f || typeof f!=='object' || !f.rows || !Array.isArray(f.bands)) throw new Error('A file in this workspace is missing its bands or rows.');
+  const out=Object.assign({duplicates:[], unmatched:[], vanTotalPeople:null, name:f.name||'loaded'}, f);
+  out.precincts=Object.keys(out.rows).length;
+  out.total=Object.values(out.rows).reduce((a,v)=>a+(Array.isArray(v)?v.reduce((x,y)=>x+num(y),0):0),0);
+  if(out.vanTotalPeople==null) out.vanTotalPeople=null;
+  return out;
+}
+function parseCrosswalk(txt){
+  const t=tableFromDelimited(txt); if(t.length<2) throw new Error('The groups file needs a header row and at least one precinct row.');
+  const hdr=t[0].map(x=>x.trim()); const pi=hdr.findIndex(x=>/^precinct/i.test(x)); if(pi<0) throw new Error('The groups file needs a first column called "precinct".');
+  const keep=hdr.map((x,i)=>i!==pi && x!=='' ? i : -1).filter(i=>i>=0); const columns=keep.map(i=>hdr[i]); const rows={};
+  for(const r of t.slice(1)){ const name=(r[pi]||'').trim(); if(!name) continue; rows[name]=keep.map(i=>(r[i]||'').trim()); }
+  if(!columns.length) throw new Error('Add at least one label column (for example "turf") next to the precinct column.');
+  return {columns, rows};
+}
+
+// ---------- workspace
+function applyWorkspace(o, fromStorage){
+  const n=defaults();
+  for(const k of Object.keys(n)) if(o[k]!==undefined) n[k]=o[k];
+  const files={}; for(const k of Object.keys(o.files||{})){ if(SLOTS.some(s=>s.key===k)) files[k]=normalizeFile(o.files[k]); } n.files=files;
+  if(n.crosswalk && (!Array.isArray(n.crosswalk.columns) || typeof n.crosswalk.rows!=='object')) n.crosswalk=null;
+  if(n.buckets && !Array.isArray(n.buckets)) n.buckets=null;
+  if(n.buckets){ const OLD={'#1f4e99':'#174ea6','#234ca4':'#174ea6','#4a90d9':'#3d9be9','#4696ca':'#3d9be9','#b38600':'#f5c842','#967107':'#f5c842','#d96c8a':'#c2468e','#db647f':'#c2468e','#a3262b':'#b5121b','#ac262a':'#b5121b'}; n.buckets.forEach(b=>{ const k=String(b.color||'').toLowerCase(); if(OLD[k]) b.color=OLD[k]; }); }
+  if(n.group && typeof n.group!=='object') n.group=null;
+  S=n; ensureBuckets(); if(!fromStorage) recordHistory();
+}
+function recordHistory(){ if(!S.asof) return; const F=S.files; S.history[S.asof]={returned:F.returned?F.returned.total:null, returned_regulars:F.returned_regulars?F.returned_regulars.total:null, registered:F.registered?F.registered.total:null, registered_regulars:F.registered_regulars?F.registered_regulars.total:null}; }
+function sameTotals(h){ const F=S.files; return h && h.returned===(F.returned?F.returned.total:null) && h.registered===(F.registered?F.registered.total:null) && h.returned_regulars===(F.returned_regulars?F.returned_regulars.total:null) && h.registered_regulars===(F.registered_regulars?F.registered_regulars.total:null); }
+
+// ---------- model
+function compute(){
+  const F=S.files; ensureBuckets();
+  const basis=(S.basis==='regular' && F.returned_regulars && F.registered_regulars)?'regular':'all';
+  const ret=basis==='regular'?F.returned_regulars:F.returned, reg=basis==='regular'?F.registered_regulars:F.registered;
+  if(!ret||!reg) return null;
+  const nb=S.buckets.length;
+  const mapBands=f=>f.bands.map(b=>{ const lo=bandLow(b); return lo==null?-1:bucketOf(lo); });
+  const mRet=mapBands(ret), mReg=mapBands(reg);
+  const names=new Set([...Object.keys(reg.rows), ...Object.keys(ret.rows)]);
+  const out=[]; let clamped=0;
+  for(const name of names){
+    const rr=reg.rows[name]||[], tr=ret.rows[name]||[];
+    const regB=new Array(nb+1).fill(0), retB=new Array(nb+1).fill(0);
+    rr.forEach((v,i)=>{ const k=mReg[i]; regB[k<0?nb:k]+=num(v); }); tr.forEach((v,i)=>{ const k=mRet[i]; retB[k<0?nb:k]+=num(v); });
+    const left=regB.map((v,i)=>{ const d=v-retB[i]; if(d<0) clamped++; return Math.max(0,d); });
+    const regT=regB.reduce((a,b)=>a+b,0), retT=retB.reduce((a,b)=>a+b,0);
+    const chase=left.reduce((a,v,i)=>a+((i<nb?S.buckets[i].chase:S.noScoreChase)?v:0),0);
+    const g=S.crosswalk&&S.crosswalk.rows[name]?S.crosswalk.rows[name]:null;
+    out.push({name, left, regB, retB, regT, retT, totalLeft:left.reduce((a,b)=>a+b,0), chase, share:regT?Math.min(1,retT/regT):null, groups:g});
+  }
+  const used=new Set(); for(const f of [ret,reg]) f.bands.forEach(b=>{ const lo=bandLow(b); if(lo!=null) used.add(bucketOf(lo)); });
+  return {rows:out, basis, nb, clamped, bucketsUsed:used.size};
+}
+
+// ---------- rendering
+function render(){
+  ensureBuckets(); renderDrops(); renderBuckets(); renderHistory();
+  $('asofInput').value=S.asof||''; $('edayInput').value=S.electionDay||''; $('topSel').value=S.top; $('presetSel').value=S.preset; $('breakdownChk').checked=!!S.breakdown;
+  const M=compute(); renderChecks(M);
+  const F=S.files; const loaded=F.returned&&F.registered;
+  $('dataDetails').open = !loaded || !!$('dataDetails').dataset.keep; $('steps').classList.toggle('hidden', !!loaded);
+  $('dataSummary').textContent = loaded? `Update data · as of ${fmtDate(S.asof)||'date not set'} · ${SLOTS.filter(s=>F[s.key]).length} of 4 files loaded` : 'Data: load your VAN files';
+  $('historyCard').classList.toggle('hidden', !Object.keys(S.history).length);
+  $('banner').classList.toggle('hidden', S.source!=='data'); if(S.source==='data') $('banner').textContent=`Showing data loaded automatically (data.js) as of ${fmtDate(S.asof)}. Files you drop here will be replaced the next time the page opens.`;
+  const bs=$('basisSel'); bs.value = M?M.basis:S.basis; bs.querySelector('option[value=regular]').disabled = !(F.returned_regulars&&F.registered_regulars);
+  const sortSel=$('sortSel'); const sorts=[['chase','Chase voters left'],['totalLeft','All voters left'],['shareAsc','Share already voted, lowest first'],['name','Precinct name']];
+  sortSel.innerHTML=sorts.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join(''); sortSel.value=S.sort;
+  const gs=$('groupSel'); const cols=S.crosswalk?S.crosswalk.columns:[]; gs.innerHTML='<option value="">All precincts</option>'; const groupVals=[];
+  if(S.crosswalk){ cols.forEach((c,ci)=>{ const vals=[...new Set(Object.values(S.crosswalk.rows).map(r=>r[ci]).filter(Boolean))].sort(); vals.forEach(v=>{ const o=document.createElement('option'); o.value=String(groupVals.length); o.textContent=`${c}: ${v}`; gs.appendChild(o); groupVals.push({col:ci,val:v}); }); }); }
+  $('groupLbl').classList.toggle('hidden', !S.crosswalk);
+  let gidx=-1; if(S.group){ gidx=groupVals.findIndex(g=>g.col===S.group.col&&g.val===S.group.val); if(gidx<0) S.group=null; } gs.value=gidx>=0?String(gidx):'';
+  if(!M){ $('todayCard').classList.add('hidden'); $('chaseCard').classList.add('hidden');
+    $('asofLine').textContent = (F.returned||F.registered) ? `Data as of ${fmtDate(S.asof)||'(date not set)'}. Load the ${F.returned?'registered':'returned'} file to see the list.` : 'No data yet'; return; }
+  $('todayCard').classList.remove('hidden'); $('chaseCard').classList.remove('hidden');
+  const days=S.electionDay&&S.asof? Math.round((new Date(S.electionDay+'T12:00:00')-new Date(S.asof+'T12:00:00'))/864e5):null;
+  $('asofLine').textContent = S.asof? `Data as of ${fmtDate(S.asof)}` : 'Data as of: set the date in the Data section';
+  const label = S.group? `${cols[S.group.col]} ${S.group.val}` : '';
+  let rows=M.rows; if(S.group) rows=rows.filter(r=>r.groups&&r.groups[S.group.col]===S.group.val);
+  const totalLeft=rows.reduce((a,r)=>a+r.totalLeft,0), chaseLeft=rows.reduce((a,r)=>a+r.chase,0), regT=rows.reduce((a,r)=>a+r.regT,0), retT=rows.reduce((a,r)=>a+r.retT,0);
+  const retAll=F.returned? rows.reduce((a,r)=>a+(F.returned.rows[r.name]||[]).reduce((x,y)=>x+num(y),0),0) : null;
+  const byChase=rows.slice().sort((a,b)=>b.chase-a.chase); let acc=0, nHalf=0; for(const r of byChase){ acc+=r.chase; nHalf++; if(acc>=chaseLeft/2) break; }
+  const n=Number(S.top); const topShare = chaseLeft? byChase.slice(0, n||byChase.length).reduce((a,r)=>a+r.chase,0)/chaseLeft : 0;
+  const where = label? ` in ${esc(label)}` : '';
+  $('headline').innerHTML = chaseLeft? `Half of the <b>${fmt(chaseLeft)}</b> chase voters still out${where} are in <b>${nHalf}</b> of ${rows.length} precincts.` : `No chase voters left${where}: check the score groups and the files.`;
+  const basisWord = M.basis==='regular'?'regular voters':'registered voters';
+  const bigs=[ {l:'Chase voters still out'+(label?` (${esc(label)})`:''), v:fmt(chaseLeft), s:S.buckets.filter(b=>b.chase).map(b=>esc(b.name)).join(' + ')+(S.noScoreChase?' + No score':'')},
+    {l:'Ballots returned'+(label?` (${esc(label)})`:''), v:fmt(retAll), s: M.basis==='regular'?`${fmt(retT)} of them regular voters`:`all voters`},
+    {l:`Share of ${basisWord} who voted`, v:pct(regT?retT/regT:null), s:`${fmt(totalLeft)} still out of ${fmt(regT)}`},
+    {l:'Days to Election Day', v: days==null?'–':(days<0?'done':String(days)), s: days==null?'set the date in the Data section':fmtDate(S.electionDay)} ];
+  $('bigs').innerHTML=bigs.map(b=>`<div class="big"><div class="lbl">${b.l}</div><div class="val">${b.v}</div><div class="sub">${b.s}</div></div>`).join('');
+  $('printTitle').textContent = `Vote Chase · as of ${fmtDate(S.asof)} · counting ${basisWord}${label?` · ${label}`:''}`;
+  $('legend').innerHTML = S.buckets.map(b=>`<span><i style="background:${esc(barColor(b.color))};opacity:1"></i>${esc(b.name)}</span>`).join('') + `<span><i style="background:${barColor(NOSCORE_COLOR)};opacity:1"></i>No score</span><span class="muted">Chase buckets first, then the rest. One scale for every row.</span>`;
+  let list=rows.slice();
+  const sorter={chase:(a,b)=>b.chase-a.chase, totalLeft:(a,b)=>b.totalLeft-a.totalLeft, shareAsc:(a,b)=>(a.share??1)-(b.share??1), name:(a,b)=>a.name.localeCompare(b.name)}[S.sort]||((a,b)=>b.chase-a.chase);
+  list.sort(sorter); const shown=n?list.slice(0,n):list;
+  const maxLeft=Math.max(1,...list.map(r=>r.totalLeft));
+  const headCells=[['#','',''],['Precinct','','name'],['Chase left','num','chase'],['Who\'s left','',''],['Cumulative %','num c-cum',''],['% voted','num c-voted','shareAsc']];
+  if(S.breakdown){ S.buckets.forEach(b=>headCells.push([esc(b.name)+' left','num c-opt',''])); headCells.push(['No score left','num c-opt','']); headCells.push(['All left','num c-opt','totalLeft']); }
+  $('chaseTable').querySelector('thead').innerHTML='<tr>'+headCells.map(h=>`<th class="${h[1]} ${h[2]?'sortable':''} ${h[2]&&h[2]===S.sort?'sorted':''}" data-sort="${h[2]}" title="${h[0]==='Cumulative %'?'Running share of the chase voters in this list, counting down from the top':h[0]==='% voted'?'Share of this precinct\'s '+basisWord+' who have already returned a ballot':''}">${h[0]}</th>`).join('')+'</tr>';
+  const chaseSum=list.reduce((a,r)=>a+r.chase,0); let run=0, halfMarked=false;
+  const chaseIdx=S.buckets.map((b,i)=>b.chase?i:-1).filter(i=>i>=0).concat(S.noScoreChase?[S.buckets.length]:[]);
+  const otherIdx=S.buckets.map((b,i)=>b.chase?-1:i).filter(i=>i>=0).concat(S.noScoreChase?[]:[S.buckets.length]);
+  $('chaseTable').querySelector('tbody').innerHTML = shown.map((r,i)=>{ run+=r.chase; const cum=chaseSum?run/chaseSum:0; const half=!halfMarked&&cum>=0.5&&S.sort==='chase'; if(half) halfMarked=true;
+    const seg=(k,other)=>{ const v=r.left[k]; if(!v) return ''; const col=k<S.buckets.length?S.buckets[k].color:NOSCORE_COLOR; const nm=k<S.buckets.length?S.buckets[k].name:'No score'; return `<span class="${other?'other':''}" style="width:${(v/maxLeft*100).toFixed(2)}%;background:${esc(barColor(col))}" title="${esc(nm)}: ${fmt(v)}${other?' (not in the chase count)':''}"></span>`; };
+    const chaseSegs=chaseIdx.map(k=>seg(k,false)).join(''); const otherSegs=otherIdx.map(k=>seg(k,true)).join('');
+    const bar=chaseSegs+otherSegs;
+    const gsub=r.groups?r.groups.filter(Boolean).join(' · '):(S.crosswalk?'(no group)':'');
+    const cells=[`<td class="num muted rank"><span>${i+1}</span></td>`,`<td>${esc(r.name)}${gsub?`<span class="sub">${esc(gsub)}</span>`:''}</td>`,`<td class="num"><b>${fmt(r.chase)}</b></td>`,`<td class="bar"><div class="stack">${bar}</div></td>`,`<td class="num c-cum">${pct(cum)}</td>`,`<td class="num c-voted">${pct(r.share)}</td>`];
+    if(S.breakdown){ r.left.forEach(v=>cells.push(`<td class="num c-opt">${fmt(v)}</td>`)); cells.push(`<td class="num c-opt">${fmt(r.totalLeft)}</td>`); }
+    return `<tr class="${half?'half':''}">${cells.join('')}</tr>`; }).join('');
+  const sortName={chase:'chase voters left', totalLeft:'all voters left', shareAsc:'share already voted', name:'name'}[S.sort];
+  $('chaseTitle').textContent = (n&&n<list.length?`Top ${Math.min(n,shown.length)} precincts`:`All ${shown.length} precincts`) + (S.sort==='chase'?' to chase':`, sorted by ${sortName}`) + (label?` in ${label}`:'');
+  $('chaseFoot').textContent = (halfMarked?'The blue line marks where half of the chase voters are above. ':'') + 'Chase left = voters in the ticked score groups who have not returned a ballot (registered minus returned, per precinct). Precincts with no returns in VAN\'s file count as zero returned.';
+  window.__lastList={shown, list, label, basisWord, chaseLeft, nHalf, total:rows.length, days};
+}
+function renderDrops(){
+  const d=$('drops');
+  if(!d.children.length){
+    const cells=['<div></div>','<div class="axis top">All voters</div>','<div class="axis top">Regular voters (voted 2022 or 2024)</div>'];
+    for(const row of [0,1]){ cells.push(`<div class="axis">${row===0?'Returned (pull daily)':'Registered (pull once, then after the deadline)'}</div>`);
+      for(const col of [0,1]){ const s=SLOTS.find(x=>x.row===row&&x.col===col); cells.push(`<div class="drop" data-slot="${s.key}" tabindex="0" role="button" aria-label="${esc(s.title)}"><div class="t">${esc(s.title)}<span class="req ${s.req?'is-req':'is-opt'}">${s.req?'Required':'Optional'}</span></div><div class="s">${esc(s.sub)}</div><div class="f"></div><div class="err"></div><input type="file" accept=".xls,.csv,.txt,.tsv,.html,.htm"></div>`); } }
+    d.innerHTML=cells.join(''); d.querySelectorAll('.drop').forEach(el=>wireDrop(el, f=>loadSlot(el.dataset.slot, f)));
+  }
+  d.querySelectorAll('.drop').forEach(el=>{ const f=S.files[el.dataset.slot]; el.classList.toggle('loaded',!!f); el.querySelector('.f').textContent = f? `✓ ${f.name||'loaded'} · ${fmt(f.precincts)} precincts · ${fmt(f.total)} people${f.fileDate?` · file dated ${fmtDate(f.fileDate)}`:''}` : 'Drop a file here or click to choose'; });
+  const x=$('dropXwalk'); x.classList.toggle('loaded',!!S.crosswalk); $('xwalkInfo').textContent = S.crosswalk? `✓ ${Object.keys(S.crosswalk.rows).length} precincts · columns: ${S.crosswalk.columns.join(', ')}` : 'Drop a file here or click to choose';
+}
+function renderBuckets(){
+  const tb=$('bucketTable').querySelector('tbody'); const lows=bandLows(); const opts=(sel)=>(lows.length?lows:[0,10,20,30,40,50,60,70,80,90]).slice().reverse().map(l=>`<option value="${l}" ${l===sel?'selected':''}>${l}</option>`).join('');
+  tb.innerHTML=S.buckets.map((b,i)=>`<tr><td><input type="text" data-i="${i}" data-k="name" value="${esc(b.name)}"></td><td>${i===S.buckets.length-1?'<span class="muted">0 (lowest)</span>':`<select data-i="${i}" data-k="lo">${opts(b.lo)}</select>`}</td><td class="muted small">${esc(bucketCovers(i))}</td><td><input type="color" data-i="${i}" data-k="color" value="${esc(b.color)}"></td><td><input type="checkbox" data-i="${i}" data-k="chase" ${b.chase?'checked':''}></td></tr>`).join('')
+    + `<tr><td><span class="muted">No score</span></td><td class="muted small">voters with no score</td><td class="muted small">Unknown</td><td><input type="color" value="${NOSCORE_COLOR}" disabled></td><td><input type="checkbox" data-k="noscore" ${S.noScoreChase?'checked':''}></td></tr>`;
+  tb.querySelectorAll('input,select').forEach(inp=>inp.addEventListener('change',()=>{ const k=inp.dataset.k; if(k==='noscore'){ S.noScoreChase=inp.checked; save(); render(); return; } const i=Number(inp.dataset.i); const b=S.buckets[i]; if(k==='chase') b.chase=inp.checked; else if(k==='lo'){ const v=Number(inp.value); if(S.buckets.some((o,j)=>j!==i&&o.lo===v)){ inp.value=b.lo; return; } b.lo=v; } else b[k]=inp.value; ensureBuckets(); save(); render(); }));
+  const f=S.files.registered||S.files.returned; $('bandsInfo').textContent = f? `Bands in your file: ${f.bands.join(', ')}` : '';
+}
+function renderChecks(M){
+  const L=[]; const F=S.files; let problems=0; const ok=t=>L.push(`<li class="ok">OK · ${t}</li>`), bad=t=>{ L.push(`<li class="bad">Check · ${t}</li>`); problems++; };
+  for(const s of SLOTS){ const f=F[s.key]; if(!f){ if(s.req) L.push(`<li class="muted">${esc(s.title)}: not loaded (required)</li>`); continue; }
+    ok(`${esc(s.title)}: ${fmt(f.precincts)} precinct rows, ${fmt(f.total)} people`);
+    if(f.vanTotalPeople && Math.round(f.vanTotalPeople)!==Math.round(f.total)) bad(`${esc(s.title)}: the precinct rows add up to ${fmt(f.total)} but VAN's own Total People says ${fmt(f.vanTotalPeople)}. Usually a cut-off file or an extra column in the export.`);
+    if(f.duplicates&&f.duplicates.length) ok(`${esc(s.title)}: ${f.duplicates.length} precinct name(s) appeared twice and were added together (${esc(f.duplicates.slice(0,3).join('; '))}${f.duplicates.length>3?'…':''})`);
+    if(f.unmatched&&f.unmatched.length) bad(`${esc(s.title)}: these score bands could not be read as numbers and are counted as "No score": ${esc(f.unmatched.join(', '))}.`); }
+  if(F.returned&&F.registered){
+    const missing=Object.keys(F.returned.rows).filter(n=>!F.registered.rows[n]); if(missing.length) bad(`${missing.length} precinct(s) in the returned file are not in the registered file: ${esc(missing.slice(0,4).join('; '))}${missing.length>4?'…':''}. Check that both pulls use the same precinct field.`); else ok('Every precinct in the returned file is in the registered file.');
+    if(F.returned.total>F.registered.total) bad('More returned ballots than registered voters. The two pulls do not use the same suppression settings.');
+    if(JSON.stringify(F.returned.bands)!==JSON.stringify(F.registered.bands)) bad('The score bands differ between the returned and registered files. Use the same crosstab score on every pull.'); }
+  if(F.returned_regulars&&F.returned&&F.returned_regulars.total>F.returned.total) bad('"Returned, regular voters" is larger than "Returned". The regulars file has fewer filters than the all-voters file.');
+  if(F.registered_regulars&&F.registered&&F.registered_regulars.total>F.registered.total) bad('"Registered, regular voters" is larger than "Registered".');
+  if(F.registered&&F.registered.prevTotal&&Math.abs(F.registered.total-F.registered.prevTotal)/F.registered.prevTotal>0.03) bad(`The registered total moved ${pct((F.registered.total-F.registered.prevTotal)/F.registered.prevTotal)} since the last registered pull. Same suppression settings?`);
+  if(M){ if(M.bucketsUsed<=1 && S.buckets.length>1) bad(`All score bands fall into one bucket. The bucket cutoffs (${S.buckets.map(b=>b.lo).join(', ')}) do not match the bands in the file (${esc(bandsOf().slice(0,4).join(', '))}…). Re-pick the lowest band for each bucket under Score groups, or re-apply a preset.`);
+    if(M.clamped) bad(`${M.clamped} precinct-and-band combination(s) had more returned than registered voters and were counted as zero left. Same suppression settings on every pull?`); }
+  if(S.crosswalk&&F.registered){ const unknown=Object.keys(F.registered.rows).filter(n=>!S.crosswalk.rows[n]).length; if(unknown) L.push(`<li class="muted">Precinct groups: ${unknown} precinct(s) in the data have no group.</li>`); }
+  if(!S.asof && (F.returned||F.registered)) bad('No "data as of" date. Set it in the Data section.');
+  $('checksList').innerHTML=L.join('');
+  const loaded=F.returned&&F.registered; $('checksCard').classList.toggle('hidden', !(F.returned||F.registered));
+  $('checksSummary').textContent = problems?`Checks: ${problems} thing(s) to look at`:`Checks: all OK (${L.length})`; $('checksDetails').open=!!problems;
+  const chip=$('checksChip'); chip.textContent = !loaded?((F.returned||F.registered)?`Load the ${F.returned?'registered':'returned'} file`:'Load data to start'):(problems?`Checks: ${problems} to look at`:'Checks: OK'); chip.className='chip '+(!loaded?'':problems?'warn':'ok');
+}
+function renderHistory(){
+  const dates=Object.keys(S.history).sort(); $('historyTable').querySelector('tbody').innerHTML = dates.map(d=>{ const h=S.history[d]; return `<tr><td>${fmtDate(d)}</td><td class="num">${fmt(h.returned)}</td><td class="num">${fmt(h.returned_regulars)}</td><td class="num">${fmt(h.registered)}</td><td class="num">${fmt(h.registered_regulars)}</td><td class="num">${h.returned_regulars&&h.registered_regulars?pct(h.returned_regulars/h.registered_regulars):''}</td></tr>`; }).join('');
+}
+
+// ---------- file wiring
+function wireDrop(el, onFile){
+  const inp=el.querySelector('input'); el.addEventListener('click',e=>{ if(e.target!==inp) inp.click(); });
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); inp.click(); } });
+  inp.addEventListener('change',()=>{ if(inp.files[0]) onFile(inp.files[0]); inp.value=''; });
+  ['dragenter','dragover'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault(); el.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault(); el.classList.remove('over');}));
+  el.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) onFile(f); });
+}
+function readFile(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ try{ res(decodeBuffer(r.result)); }catch(e){ rej(e); } }; r.onerror=()=>rej(new Error('Could not read the file.')); r.readAsArrayBuffer(file); }); }
+function showErr(slot, msg){ const el=slot?document.querySelector(`.drop[data-slot="${slot}"] .err`):$('xwalkErr'); if(el){ el.textContent=msg; setTimeout(()=>{ el.textContent=''; }, 12000); } }
+async function loadSlot(slot, file){
+  try{ const txt=await readFile(file); const parsed=parseCountReport(txt); parsed.name=file.name; parsed.fileDate=localISO(new Date(file.lastModified));
+    if(slot==='registered' && S.files.registered) parsed.prevTotal=S.files.registered.total;
+    if(S.source==='data' && !confirm('This page is showing data loaded automatically. Files you drop will be shown now but replaced the next time the page opens. Continue?')) return;
+    S.files[slot]=parsed; S.source='manual';
+    if(slot.startsWith('returned') && parsed.fileDate!==S.asofFrom){ if(S.asof && S.asof!==parsed.fileDate && sameTotals(S.history[S.asof])) delete S.history[S.asof]; S.asof=parsed.fileDate; S.asofFrom=parsed.fileDate; }
+    if(!S.asof){ S.asof=parsed.fileDate; S.asofFrom=parsed.fileDate; }
+    recordHistory(); save(); render(); }
+  catch(err){ showErr(slot, err.message); }
+}
+async function loadXwalk(file){ try{ const txt=await readFile(file); S.crosswalk=parseCrosswalk(txt); S.group=null; save(); render(); }catch(err){ showErr(null, err.message); } }
+function download(name, text, type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+
+// ---------- sample data
+function sample(){
+  const bands=['0 to 9.99','10 to 19.99','20 to 29.99','30 to 39.99','40 to 49.99','50 to 59.99','60 to 69.99','70 to 79.99','80 to 89.99','90+','Unknown'];
+  let seed=7; const rnd=()=>{ seed=(seed*9301+49297)%233280; return seed/233280; };
+  const towns=['Maple City','Riverton Township','Oak Hill','Fairview','Lakeside Township','Granger City','North Bend','Westfield Township'];
+  const mk=()=>({bands, rows:{}, name:'sample data', duplicates:[], unmatched:[], vanTotalPeople:null});
+  const reg=mk(), ret=mk(), regR=mk(), retR=mk(); const xw={columns:['county','turf'], rows:{}};
+  const hump=(i,c,w)=>Math.exp(-Math.pow((i-c)/w,2));
+  towns.forEach((t,ti)=>{ const n=3+Math.floor(rnd()*5); for(let p=1;p<=n;p++){ const name=`Sample - ${t} - ${String(p).padStart(3,'0')}`; const size=400+Math.floor(rnd()*2200); const lean=rnd();
+    const w=bands.slice(0,10).map((b,i)=>0.15+hump(i,1.5+lean*2,1.4)*(1.2-lean)+hump(i,8-lean*1.5,1.3)*(0.4+lean)); const ws=w.reduce((a,b)=>a+b,0);
+    const r=w.map(x=>Math.round(size*x/ws)); r.push(Math.round(size*0.03)); const rr=r.map(v=>Math.round(v*(0.55+rnd()*0.2)));
+    const rate=0.05+rnd()*0.15; const rt=r.map((v,i)=>Math.round(v*rate*(0.6+i/10))); const rtr=rt.map(v=>Math.round(v*0.95));
+    reg.rows[name]=r; regR.rows[name]=rr; ret.rows[name]=rt; retR.rows[name]=rtr; xw.rows[name]=[ti<4?'North County':'South County', `Turf ${String.fromCharCode(65+ti%3)}`]; } });
+  S=defaults(); S.files={returned:normalizeFile(ret), registered:normalizeFile(reg), returned_regulars:normalizeFile(retR), registered_regulars:normalizeFile(regR)}; S.crosswalk=xw; S.asof=localISO(new Date()); S.asofFrom=S.asof; ensureBuckets(); recordHistory(); save(); render();
+}
+
+// ---------- events
+function wire(){
+  wireDrop($('dropXwalk'), loadXwalk);
+  $('asofInput').addEventListener('change',()=>{ const nv=$('asofInput').value; if(!nv) return; if(S.asof && S.asof!==nv && sameTotals(S.history[S.asof])) delete S.history[S.asof]; S.asof=nv; recordHistory(); save(); render(); });
+  $('edayInput').addEventListener('change',()=>{ S.electionDay=$('edayInput').value; save(); render(); });
+  $('basisSel').addEventListener('change',()=>{ S.basis=$('basisSel').value; save(); render(); });
+  $('groupSel').addEventListener('change',()=>{ const v=$('groupSel').value; if(v===''){ S.group=null; } else { const o=$('groupSel').options[$('groupSel').selectedIndex]; const [c,...rest]=o.textContent.split(': '); const ci=S.crosswalk.columns.indexOf(c); S.group={col:ci, val:rest.join(': ')}; } save(); render(); });
+  $('sortSel').addEventListener('change',()=>{ S.sort=$('sortSel').value; save(); render(); });
+  $('topSel').addEventListener('change',()=>{ S.top=$('topSel').value; save(); render(); });
+  $('breakdownChk').addEventListener('change',()=>{ S.breakdown=$('breakdownChk').checked; save(); render(); });
+  $('presetSel').addEventListener('change',()=>{ const custom=S.buckets && JSON.stringify(S.buckets.map(b=>[b.name,b.color,b.chase]))!==JSON.stringify(PRESETS[S.preset].map(b=>[b[0],b[2],b[3]])); if(custom && !confirm('Applying a preset replaces your bucket names, colours and chase ticks. Continue?')){ $('presetSel').value=S.preset; return; } S.preset=$('presetSel').value; S.buckets=presetBuckets(S.preset); save(); render(); });
+  $('saveBtn').addEventListener('click',()=>download(`vote-chase-${S.asof||'workspace'}.json`, JSON.stringify(S,null,1), 'application/json'));
+  $('loadWsBtn').addEventListener('click',()=>$('loadWs').click());
+  $('loadWs').addEventListener('change',async()=>{ const f=$('loadWs').files[0]; $('loadWs').value=''; if(!f) return; try{ const o=JSON.parse(await readFile(f)); if(!o||o.version!==1||!o.files) throw new Error('This is not a Vote Chase workspace file.'); applyWorkspace(o,false); S.source='manual'; save(); render(); }catch(e){ alert(`Could not load that workspace: ${e.message}`); } });
+  $('sampleBtn').addEventListener('click',()=>{ if(Object.keys(S.files).length && !confirm('Loading the sample replaces the data on this page. Download your workspace first if you want to keep it. Continue?')) return; sample(); });
+  const resetAll=async()=>{ if(!confirm('Reset this page? This removes all loaded counts, settings and history that this page saved in this browser. (Your VAN files on disk are not touched. If a data.js sits next to the page, it will load again.)')) return;
+    try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+    try{ sessionStorage.clear(); }catch(e){}
+    try{ if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); } }catch(e){}
+    try{ if(indexedDB && indexedDB.databases){ const dbs=await indexedDB.databases(); await Promise.all(dbs.map(d=>d.name&&new Promise(r=>{ const q=indexedDB.deleteDatabase(d.name); q.onsuccess=q.onerror=q.onblocked=()=>r(); }))); } }catch(e){}
+    S=defaults(); ensureBuckets(); window.VOTECHASE_DATA=undefined; render();
+    const u=new URL(location.href); u.searchParams.set('reset', Date.now().toString()); location.replace(u.toString()); };
+  $('clearBtn').addEventListener('click',resetAll); $('resetBtn').addEventListener('click',resetAll);
+  $('xwalkTemplate').addEventListener('click',()=>{ const f=S.files.registered||S.files.returned; const names=f?Object.keys(f.rows).sort():['County - Town - 001']; download('precinct-groups-template.csv','precinct,county,turf\n'+names.map(n=>`"${n.replace(/"/g,'""')}",,`).join('\n'),'text/csv'); });
+  $('xwalkClear').addEventListener('click',()=>{ S.crosswalk=null; S.group=null; save(); render(); });
+  $('copyBtn').addEventListener('click',()=>{ const L=window.__lastList; if(!L) return; const w=Math.max(...L.shown.map(r=>r.name.length));
+    const lines=[`*Vote Chase · ${fmtDate(S.asof)}${L.days!=null&&L.days>=0?` · ${L.days} days out`:''}${L.label?` · ${L.label}`:''}*`, `${fmt(L.chaseLeft)} chase voters still out (${S.buckets.filter(b=>b.chase).map(b=>b.name).join(' + ')}), counting ${L.basisWord}. Half are in ${L.nHalf} of ${L.total} precincts.`, '```'];
+    L.shown.forEach((r,i)=>lines.push(`${String(i+1).padStart(2)}  ${r.name.padEnd(w)}  ${fmt(r.chase).padStart(7)}   ${pct(r.share).padStart(4)} voted`)); lines.push('```');
+    const txt=lines.join('\n'); const done=()=>{ $('copyBtn').textContent='Copied'; setTimeout(()=>$('copyBtn').textContent='Copy as text',1500); };
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done)); else fallbackCopy(txt,done); });
+  function fallbackCopy(txt,done){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ alert('Copy failed. Use Download CSV instead.'); } ta.remove(); }
+  $('csvBtn').addEventListener('click',()=>{ const L=window.__lastList; if(!L) return; const gcols=S.crosswalk?S.crosswalk.columns:[]; const head=['precinct',...gcols,'chase_left',...S.buckets.map(b=>b.name.replace(/\s+/g,'_')+'_left'),'no_score_left','all_left','share_voted']; const lines=L.shown.map(r=>[r.name,...gcols.map((c,ci)=>r.groups?(r.groups[ci]||''):''),r.chase,...r.left,r.totalLeft,r.share==null?'':(r.share*100).toFixed(1)].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')); download(`vote-chase-${S.asof||'list'}.csv`, head.join(',')+'\n'+lines.join('\n'), 'text/csv'); });
+  $('chaseTable').querySelector('thead').addEventListener('click',e=>{ const th=e.target.closest('th'); if(!th||!th.dataset.sort) return; S.sort=th.dataset.sort; save(); render(); });
+  $('dataDetails').addEventListener('toggle',()=>{ $('dataDetails').dataset.keep = $('dataDetails').open ? '1' : ''; });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>render());
+}
+async function autoload(){
+  try{ if(window.VOTECHASE_DATA && window.VOTECHASE_DATA.version===1 && window.VOTECHASE_DATA.files){ const hist=Object.assign({}, S.history); applyWorkspace(window.VOTECHASE_DATA,false); S.history=Object.assign(hist, S.history); S.source='data'; save(); return true; } }catch(e){ console.warn('data.js could not be used:', e.message); }
+  if(location.protocol==='http:'||location.protocol==='https:'){
+    try{ const r=await fetch('data.json',{cache:'no-store'}); if(!r.ok) return false; const o=await r.json(); if(o&&o.version===1&&o.files){ const hist=Object.assign({}, S.history); applyWorkspace(o,false); S.history=Object.assign(hist, S.history); S.source='data'; save(); return true; } }catch(e){} }
+  if(S.source==='data'){ S.source='manual'; save(); }
+  return false;
+}
+window.VoteChase={parseCountReport, parseCrosswalk, compute, normalizeFile, state:()=>S, setFile:(k,p)=>{ S.files[k]=normalizeFile(p); S.source='manual'; recordHistory(); save(); render(); }, render};
+if(new URL(location.href).searchParams.has('reset')){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} history.replaceState(null,'',location.pathname); }
+load(); ensureBuckets(); wire(); render(); autoload().then(ok=>{ if(ok) render(); });
+})();
+</script>
+</body>
+</html>

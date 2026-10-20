@@ -1,0 +1,22 @@
+{
+  "name": "polling-priority-runner",
+  "private": true,
+  "type": "module",
+  "description": "Reads LBJ's \"Line Lengths by Hour\" dashboard every few minutes and sends the wait times to the Polling Location Priority Google Sheet.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "start": "node --env-file-if-exists=.env lines.mjs",
+    "once": "node --env-file-if-exists=.env lines.mjs --once",
+    "check": "node --env-file-if-exists=.env lines.mjs --once --dry-run",
+    "pick": "node --env-file-if-exists=.env lines.mjs --pick --dry-run",
+    "service": "node scripts/service.mjs",
+    "stop": "node scripts/stop.mjs",
+    "mock": "node tools/mock-lbj.mjs",
+    "mock-run": "LBJ_HEADLESS=1 LBJ_URL=http://localhost:8787 SHEET_URL=http://localhost:8787/mock-sheet SHEET_TOKEN=mock-token-0000000000000000000000000000 node lines.mjs --once",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

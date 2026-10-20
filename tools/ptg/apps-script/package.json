@@ -1,0 +1,9 @@
+{
+  "name": "ptg-apps-script",
+  "private": true,
+  "description": "Progress to Goals tracker — Apps Script bound to the PTG Google Sheet",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "push": "clasp push"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "polling-priority-feeders",
+  "private": true,
+  "type": "module",
+  "description": "Ways to fill the `locations` tab: SQL templates and a local voter-CSV aggregator.",
+  "scripts": {
+    "aggregate": "node aggregate.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

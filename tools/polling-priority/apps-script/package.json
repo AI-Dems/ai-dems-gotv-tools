@@ -1,0 +1,9 @@
+{
+  "name": "polling-priority-apps-script",
+  "private": true,
+  "description": "Polling Location Priority + Line Tracker — Apps Script bound to the Google Sheet",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "push": "clasp push"
+  }
+}
